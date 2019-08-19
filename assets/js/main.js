@@ -1,9 +1,10 @@
 //Bar options
 var data = {
-  values: [[4, 5], [18, 19, 29], [2]],
+  values: [[4, 5], [18, 19, 29], [4]],
   labels: ["red", "azul", "verde"]
 };
 var options = {
+  ticks: 5,
   width: 250,
   height: 250,
   dataColors: [["red", "blue"], ["green", "red", "blue"], ["purple"]],
@@ -16,7 +17,7 @@ var options = {
     size: 36
   }
 };
-var chartContainer = $('#chart');
+var chartContainer = $('.bar-chart-container');
 
 
 function sumArray(data) {
@@ -37,7 +38,7 @@ function getMaxBar(data) {
 function createBar(barContainerElement, barOptions) {
   var bar = $('<div></div>')
     .addClass("text-center")
-    .css('width', barOptions.width + 'px' )
+    .css('width', barOptions.width + 'px')
     .css('height', barOptions.height + '%')
     .css('margin-left', barOptions.spacing + 'px');
   bar.appendTo(barContainerElement);
@@ -57,7 +58,7 @@ function createBar(barContainerElement, barOptions) {
   }
 }
 
-function createLabel(barOptions) {
+function createLabel(chartLabelContainer, barOptions) {
   // var span = $('<div class= justify-content + barOptions.labelPosition + ' text-center\' style=\'width:' + barOptions.width + 'px;\'/>');
   $('<div></div>')
     .addClass('justify-content-' + barOptions.labelPosition)
@@ -65,26 +66,58 @@ function createLabel(barOptions) {
     .css('width', barOptions.width + 'px')
     .css('margin-left', barOptions.spacing + 'px')
     .text(barOptions.labelName)
-    .appendTo('#label');
+    .appendTo(chartLabelContainer);
 }
 
-function sizeChart(width, height) {
-  $('#chart').height(height);
-  $('#chart').width(width);
-  $('#label').width(width);
+function sizeChart(charContainer, labelContainer, width, height) {
+  charContainer.height(height);
+  charContainer.width(width);
+  labelContainer.width(width);
 }
 
-function setTitle(title, color, size) {
-  var chartTitle = document.getElementById("chartTitle");
-  chartTitle.innerHTML = title;
-  chartTitle.style.fontSize = size + "px";
-  chartTitle.style.color = color;
+function setTitle(titleContainer, title, color, size) {
+  titleContainer.text(title);
+  titleContainer.css('font-size', size + "px");
+  titleContainer.css('color', color);
 }
+function createTicks(barContainer, options) {
+  var boxTicks = $('<div></div>')
+    .css('width', '5px')
+    .css('height', '100%')
+    .css('margin-left', '-5px')
+    .appendTo(barContainer);
+  for (var i = 0; i < options.ticks; i++) {
+    var height = (100 / options.ticks);
+    $('<div></div>')
+      .css('height', height + '%')
+      .css('border-top', '1px solid black')
+      .appendTo(boxTicks);
+  }
 
+}
+function updateChart() {
+  console.log("connected");
+  console.log("connected");
+}
 function createBars(data, options, element) {
+  var titleContainer = $('<div></div>')
+    .appendTo(element);
 
-  sizeChart(options.width, options.height);
-  setTitle(options.titleOptions.text, options.titleOptions.color, options.titleOptions.size);
+  var chartBarsContainer = $('<div></div>')
+    .addClass('d-flex')
+    .addClass('chart-axis')
+    .addClass('align-items-end')
+    .appendTo(element);
+
+  var chartLabelContainer = $('<div></div>')
+    .addClass('d-flex')
+    .addClass('align-items-end')
+    .appendTo(element);
+
+  sizeChart(chartBarsContainer, chartLabelContainer, options.width, options.height);
+  setTitle(titleContainer, options.titleOptions.text, options.titleOptions.color, options.titleOptions.size);
+
+  createTicks(chartBarsContainer, options);
 
   var widthAvailableForBars = options.width - options.spacing * (data.values.length + 1);
   var barWidth = widthAvailableForBars / data.values.length;
@@ -105,13 +138,13 @@ function createBars(data, options, element) {
       dataColorBar: options.dataColors[i],
       spacing: options.spacing
     };
-    createBar(element, barOptions);
-    createLabel(barOptions);
+    createBar(chartBarsContainer, barOptions);
+    createLabel(chartLabelContainer, barOptions);
   }
 }
 
 
 
 
-createBars(data, options, chartContainer );
+createBars(data, options, chartContainer);
 
